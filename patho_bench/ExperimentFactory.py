@@ -24,13 +24,13 @@ class ExperimentFactory:
     @staticmethod
     def linprobe(model_name: str,
                  train_source: str,
-                 task_name: str,
-                 patch_embeddings_dirs: list[str],
-                 pooled_embeddings_root: str,
-                 saveto: str,
-                 combine_slides_per_patient: bool,
-                 cost,
-                 balanced: bool,
+                 task_name: str = None,
+                 patch_embeddings_dirs = '',
+                 pooled_embeddings_root = '',
+                 saveto: str = '',
+                 combine_slides_per_patient: bool = None,
+                 cost = 1.0,
+                 balanced: bool = False,
                  gpu = -1,
                  test_source: str = None,
                  splits_root: str = None,
@@ -45,7 +45,7 @@ class ExperimentFactory:
             model_name: str, name of the model
             train_source: str, name of the training data source
             test_source: str, name of the testing data source. If None, no generalizability experiment is run.
-            task_name: str, name of the task
+            task_name: str, name of the task. Only needed if loading split from HF.
             patch_embeddings_dirs: list of str, paths to folder(s) containing patch embeddings for given experiment
             pooled_embeddings_root: str, path to folder containing pooled embeddings (slide-level or patient-level). If empty dir, embeddings will be pooled on the fly.
             saveto: str, path to save the results
@@ -58,14 +58,15 @@ class ExperimentFactory:
             path_to_external_split: str, path to local split file for external testing. If test_source is not None, either this or splits_root must be provided.
             path_to_task_config: str, path to task config file. If None, task config will be loaded from HF.
             num_bootstraps: int, number of bootstraps. Default is 100.
-        '''
-        assert task_name not in ['OS', 'PFS', 'DSS'], f'{task_name} is a survival task. Use "coxnet" instead.'
-        
+        '''        
         if path_to_split:
             assert path_to_task_config, 'path_to_task_config must be provided if path_to_split is provided.'
-            split, task_info = SplitFactory.from_local(path_to_split, path_to_task_config, task_name)
+            split, task_info = SplitFactory.from_local(path_to_split, path_to_task_config)
         else:
             split, task_info = SplitFactory.from_hf(splits_root, train_source, task_name)
+        
+        if task_name is None:
+            task_name = task_info['task_col']
         split.save(os.path.join(saveto, 'split.csv'), row_divisor = 'slide_id') # Save split to experiment folder for future reference
 
         experiment = LinearProbeExperiment(dataset = DatasetFactory.from_slide_embeddings(split = split,
