@@ -23,14 +23,13 @@ class SplitFactory:
         return SplitFactory.from_local(path_to_split, path_to_config, task)
     
     @staticmethod
-    def from_local(path_to_split, path_to_config, task):
+    def from_local(path_to_split, path_to_config):
         '''
         Returns the datasplit from a local path.
         
         Args:
             path_to_split (str): Path to the split
             path_to_config (str): Path to the task config file
-            task (str): Name of task
             
         Returns:
             split (DataSplit): Split object
@@ -43,7 +42,7 @@ class SplitFactory:
         split = DataSplit(path = path_to_split,
                         id_col = task_info['sample_col'],
                         attr_cols = task_info['extra_cols'] + ['slide_id'],
-                        label_cols = [task])
+                        label_cols = [task_info['task_col']])
         return split, task_info
     
     @staticmethod
