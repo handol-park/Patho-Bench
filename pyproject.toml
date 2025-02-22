@@ -20,7 +20,9 @@ dependencies = [
     "scikit-survival",
     "lovely-tensors",
     "seaborn",
-    "datasets"
+    "datasets",
+    "einops>=0.8.1",
+    "trident",
 ]
 
 [tool.setuptools.packages.find]
@@ -42,3 +44,12 @@ readme = {file = "README.md"}
 
 [tool.setuptools.dynamic.dependencies]
 file = ["requirements.txt"]
+
+[tool.uv.sources]
+trident = { path = "../trident", editable = true }
+
+[dependency-groups]
+dev = [
+    "ipywidgets>=8.1.5",
+    "jupyter>=1.1.1",
+]
