@@ -46,7 +46,7 @@ readme = {file = "README.md"}
 file = ["requirements.txt"]
 
 [tool.uv.sources]
-trident = { path = "../trident", editable = true }
+trident = { path = "../TRIDENT", editable = true }
 
 [dependency-groups]
 dev = [
